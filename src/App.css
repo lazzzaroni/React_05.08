@@ -5,8 +5,19 @@
 }
 
 .container {
-  width: auto;
-  min-width: 300px;
+  min-width: 960px;
+}
+
+@media screen and (max-width: 992px) {
+  .container {
+    min-width: 600px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .container {
+    min-width: 300px;
+  }
 }
 
 .heading {
@@ -14,13 +25,24 @@
   text-align: center;
 }
 
-label {
-  margin: 0.5rem 0 0.2rem 0.5rem;
+.label {
+  position: relative;
+  padding: 0rem 0 3.5rem 0.5rem;
+}
+
+.label_textarea {
+  padding: 0rem 0 10.5rem 0.5rem;
 }
 
 input,
 textarea {
+  position: absolute;
+  top: 1.6rem;
+  left: 0;
+  right: 0;
+  bottom: 0;
   font-family: inherit;
+  font-size: inherit;
   border: 1px solid gray;
   border-radius: 0.5rem;
   width: auto;
@@ -29,14 +51,22 @@ textarea {
 }
 
 textarea {
-  height: auto;
+  height: max-content;
   padding: 0.5rem;
   resize: none;
 }
 
+.counter {
+  position: absolute;
+  font-size: 0.9rem;
+  bottom: -1rem;
+  right: 0.5rem;
+}
+
 .buttons {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  align-items: center;
   margin: 1.5rem;
 }
 
