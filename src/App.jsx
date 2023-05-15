@@ -1,5 +1,6 @@
 import { Component } from "react";
 import "./App.css";
+import { ErrorAlert } from "./Error";
 
 class App extends Component {
   initialState = {
@@ -11,16 +12,47 @@ class App extends Component {
     about: "",
     techStack: "",
     lastProject: "",
+    errors: {},
   };
 
   state = this.initialState;
+  checkName = (value) => {
+    const { errors } = this.state;
+    if (value == "") {
+      errors.name = "";
+    } else if (!/^\p{Lu}/u.test(value)) {
+      errors.name = "Name must start with capital letter";
+    }
+    this.setState({ errors });
+  };
+
+  checkSurname = (value) => {
+    const { errors } = this.state;
+    if (value == "") {
+      errors.surname = "";
+    } else if (!/^\p{Lu}/u.test(value) && value.length > 0) {
+      errors.surname = "Surname must start with capital letter";
+    }
+    this.setState({ errors });
+  };
 
   onChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
+    const field = e.target.name;
+    const value = e.target.value;
+
+    this.setState({ [field]: value });
+
+    if (field == "name") {
+      this.checkName(value);
+    }
+    if (field == "surname") {
+      this.checkSurname(value);
+    }
   };
 
   onSubmit = (e) => {
     e.preventDefault();
+    console.log(this.state.errors);
     this.setState(() => this.initialState);
   };
 
@@ -44,7 +76,7 @@ class App extends Component {
     return (
       <div className="container">
         <h1 className="heading">Create Profile</h1>
-        <form id="form">
+        <form id="form" onSubmit={this.onSubmit}>
           <label className="label">
             Name
             <input
@@ -56,6 +88,7 @@ class App extends Component {
               required
               autoFocus
             />
+            <ErrorAlert errors={this.state.errors} errorKey="name" />
           </label>
           <label className="label">
             Surname
@@ -67,6 +100,7 @@ class App extends Component {
               placeholder="Your Surname"
               // required
             />
+            <ErrorAlert errors={this.state.errors} errorKey="surname" />
           </label>
           <label className="label">
             Birthdate
@@ -111,7 +145,7 @@ class App extends Component {
               // required
             />
             {/* TODO: change message if (X.length > 600) */}
-            <p className="counter">{about.length}/600</p>
+            <span className="counter">{about.length}/600</span>
           </label>
 
           <label className="label label_textarea">
@@ -125,7 +159,7 @@ class App extends Component {
               // required
             />
             {/* TODO: change message if (X.length > 600) */}
-            <p className="counter">{techStack.length}/600</p>
+            <span className="counter">{techStack.length}/600</span>
           </label>
 
           <label className="label label_textarea">
@@ -138,7 +172,7 @@ class App extends Component {
               placeholder="Personal blog site, TicTacToe game, etc"
             />
             {/* TODO: change message if (X.length > 600) */}
-            <p className="counter">{lastProject.length}/600</p>
+            <span className="counter">{lastProject.length}/600</span>
           </label>
           <div className="buttons">
             <button className="button_reset" type="reset">
