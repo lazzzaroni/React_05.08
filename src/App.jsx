@@ -1,8 +1,13 @@
-import { Component } from "react";
+import { Component, createRef } from "react";
 import "./App.css";
 import { ErrorAlert } from "./Error";
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.phoneRef = createRef();
+    this.cancelRef = createRef();
+  }
   initialState = {
     name: "",
     surname: "",
@@ -36,47 +41,68 @@ class App extends Component {
     this.setState({ errors });
   };
 
+  checkPhone = () => {
+    const cardValue = this.phoneRef.current.value
+      .replace(/\D/g, "")
+      .match(/(\d{0,1})(\d{0,4})(\d{0,2})(\d{0,2})/);
+    this.phoneRef.current.value = !cardValue[2]
+      ? cardValue[1]
+      : `${cardValue[1]}-${cardValue[2]}${`${
+          cardValue[3] ? `-${cardValue[3]}` : ""
+        }`}${`${cardValue[4] ? `-${cardValue[4]}` : ""}`}`;
+    const newValue = this.phoneRef.current.value;
+
+    this.setState({ phone: newValue });
+  };
+
   onChange = (e) => {
     const field = e.target.name;
     const value = e.target.value;
 
     this.setState({ [field]: value });
 
-    if (field == "name") {
-      this.checkName(value);
-    }
-    if (field == "surname") {
-      this.checkSurname(value);
+    switch (field) {
+      case "name":
+        this.checkName(value);
+        break;
+      case "surname":
+        this.checkSurname(value);
+        break;
+      case "phone":
+        this.checkPhone(value);
+        break;
+      default:
+        break;
     }
   };
 
-  onSubmit = (e) => {
+  handleSubmit = (e) => {
     e.preventDefault();
+    this.setState(() => this.initialState);
+    this.setState({ errors: {} });
+    this.phoneRef.current.value = "";
     console.log(this.state.errors);
-    this.setState(() => this.initialState);
   };
 
-  onClick = (e) => {
+  handleCancel = (e) => {
     e.preventDefault();
     this.setState(() => this.initialState);
+    this.setState({ errors: {} });
+    this.phoneRef.current.value = "";
+
+    console.log(this.state.errors);
   };
+
+  componentDidUpdate = () => {};
 
   render() {
-    const {
-      name,
-      surname,
-      birthdate,
-      phone,
-      website,
-      about,
-      techStack,
-      lastProject,
-    } = this.state;
+    const { name, surname, birthdate, website, about, techStack, lastProject } =
+      this.state;
 
     return (
       <div className="container">
         <h1 className="heading">Create Profile</h1>
-        <form id="form" onSubmit={this.onSubmit}>
+        <form id="form" onSubmit={this.handleSubmit}>
           <label className="label">
             Name
             <input
@@ -85,7 +111,7 @@ class App extends Component {
               onChange={this.onChange}
               name="name"
               placeholder="Your Name"
-              required
+              // required
               autoFocus
             />
             <ErrorAlert errors={this.state.errors} errorKey="name" />
@@ -109,18 +135,22 @@ class App extends Component {
               value={birthdate}
               onChange={this.onChange}
               name="birthdate"
+              // required
             />
           </label>
           <label className="label">
             Phone
             <input
+              ref={this.phoneRef}
               type="tel"
-              value={phone}
               onChange={this.onChange}
               name="phone"
-              placeholder="+1234567890"
+              placeholder="1-2345-67-89"
+              minLength="12"
+              maxLength="12"
               // required
             />
+            <ErrorAlert errors={this.state.errors} errorKey="phone" />
           </label>
           <label className="label">
             Website
@@ -175,7 +205,12 @@ class App extends Component {
             <span className="counter">{lastProject.length}/600</span>
           </label>
           <div className="buttons">
-            <button className="button_reset" type="reset">
+            <button
+              className="button_reset"
+              type="reset"
+              ref={this.cancelRef}
+              onClick={this.handleCancel}
+            >
               Cancel
             </button>
             <button className="button_submit" type="submit">
