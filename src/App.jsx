@@ -13,7 +13,7 @@ class App extends Component {
     surname: "",
     birthdate: "",
     phone: "",
-    website: "",
+    website: "https://",
     about: "",
     techStack: "",
     lastProject: "",
@@ -42,6 +42,9 @@ class App extends Component {
   };
 
   checkPhone = () => {
+    const LENGTH = 12;
+    const { errors } = this.state;
+
     const cardValue = this.phoneRef.current.value
       .replace(/\D/g, "")
       .match(/(\d{0,1})(\d{0,4})(\d{0,2})(\d{0,2})/);
@@ -52,7 +55,24 @@ class App extends Component {
         }`}${`${cardValue[4] ? `-${cardValue[4]}` : ""}`}`;
     const newValue = this.phoneRef.current.value;
 
+    if (newValue.length != LENGTH) {
+      errors.phone = "Phone number must contain 9 digits";
+    } else {
+      errors.phone = "";
+    }
+
+    this.setState({ errors });
     this.setState({ phone: newValue });
+  };
+
+  checkWebsite = (value) => {
+    const { errors } = this.state;
+    if (!value.startsWith(this.initialState.website)) {
+      errors.website = "Website address must start with https://";
+    } else {
+      errors.website = "";
+    }
+    this.setState({ errors });
   };
 
   onChange = (e) => {
@@ -70,6 +90,9 @@ class App extends Component {
         break;
       case "phone":
         this.checkPhone(value);
+        break;
+      case "website":
+        this.checkWebsite(value);
         break;
       default:
         break;
@@ -160,8 +183,10 @@ class App extends Component {
               onChange={this.onChange}
               name="website"
               placeholder="https://your_website.com"
+
               // required
             />
+            <ErrorAlert errors={this.state.errors} errorKey="website" />
           </label>
 
           <label className="label label_textarea">
