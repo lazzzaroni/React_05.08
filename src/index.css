@@ -87,7 +87,8 @@ form {
   text-align: center;
   border-radius: 2rem;
   background-color: #242424;
-  height: 80vh;
+  height: fit-content;
+  max-height: 80vh;
   overflow-y: auto;
 }
 

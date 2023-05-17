@@ -29,9 +29,7 @@ class UserData extends Component {
           <h3>Last Project:</h3>
           <p>{data.lastProject}</p>
         </section>
-        <button className="button_close" onClick={handleCancel}>
-          Close
-        </button>
+        <button onClick={handleCancel}>Close</button>
       </>
     );
   }

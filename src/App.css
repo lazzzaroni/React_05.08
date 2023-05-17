@@ -116,10 +116,6 @@ textarea {
   transition-duration: 0.1s;
 }
 
-.button_close {
-  margin-top: 3rem;
-}
-
 @media (prefers-color-scheme: light) {
   .button_reset {
     background-color: #f6f8fa;
