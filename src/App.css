@@ -41,6 +41,15 @@
   color: red;
 }
 
+.counter_about,
+.counter_techStack,
+.counter_lastProject {
+  position: absolute;
+  font-size: 0.9rem;
+  bottom: 0;
+  right: 0.5rem;
+}
+
 input,
 textarea {
   position: absolute;
@@ -57,17 +66,24 @@ textarea {
   padding: 0 0.5rem;
 }
 
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #888;
+}
+
+input[type="date"].date-input--has-value::-webkit-datetime-edit-text,
+input[type="date"].date-input--has-value::-webkit-datetime-edit-month-field,
+input[type="date"].date-input--has-value::-webkit-datetime-edit-day-field,
+input[type="date"].date-input--has-value::-webkit-datetime-edit-year-field {
+  color: #f8f9fa;
+}
+
 textarea {
   height: max-content;
   padding: 0.5rem;
   resize: none;
-}
-
-.counter {
-  position: absolute;
-  font-size: 0.9rem;
-  bottom: 0;
-  right: 0.5rem;
 }
 
 .buttons {
@@ -98,6 +114,10 @@ textarea {
   background-color: #46954a;
   border-color: rgb(205 217 229 / 10%);
   transition-duration: 0.1s;
+}
+
+.button_close {
+  margin-top: 3rem;
 }
 
 @media (prefers-color-scheme: light) {

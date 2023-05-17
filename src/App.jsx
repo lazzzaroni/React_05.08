@@ -1,24 +1,26 @@
 import { Component, createRef } from "react";
 import "./App.css";
-import { ErrorAlert } from "./Error";
+import ErrorAlert from "./ErrorAlert";
+import Modal from "./Modal";
+import UserData from "./UserData";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.phoneRef = createRef();
     this.cancelRef = createRef();
+    this.showModal = false;
   }
   initialState = {
     name: "",
     surname: "",
     birthdate: "",
     phone: "",
-    website: "https://",
+    website: "",
     about: "",
     techStack: "",
     lastProject: "",
     errors: {},
-    showModal: false,
   };
 
   state = this.initialState;
@@ -65,9 +67,14 @@ class App extends Component {
   checkWebsite = (value) => {
     const { errors } = this.state;
 
-    if (!value.startsWith(this.initialState.website)) {
+    if (!value.startsWith("https://")) {
       errors.website = "Website address must start with https://";
-    } else if (value == this.initialState.website) {
+    } else if (
+      // eslint-disable-next-line no-useless-escape
+      !/^(https:\/\/www\.||https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,10}(:[0-9]{1,5})?(\/.*)?$/g.test(
+        value
+      )
+    ) {
       errors.website = "Please enter your website address";
     } else {
       errors.website = "";
@@ -80,10 +87,14 @@ class App extends Component {
     const { errors } = this.state;
     if (value.length > LENGTH) {
       errors[field] = "Limit exceeded - max 600 characters";
-      document.querySelector(".counter").setAttribute("style", "color: red");
+      document
+        .querySelector(`.counter_${field}`)
+        .setAttribute("style", "color: red");
     } else {
       errors[field] = "";
-      document.querySelector(".counter").removeAttribute("style", "color: red");
+      document
+        .querySelector(`.counter_${field}`)
+        .removeAttribute("style", "color: red");
     }
     this.setState({ errors });
   };
@@ -118,25 +129,26 @@ class App extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const errors = this.state.errors;
-    const hasErrors = Object.keys(errors).filter((key) => errors[key] != "");
+    const hasErrors = Object.keys(errors).some((key) => errors[key] != "");
 
     if (hasErrors) {
       alert("Please fill in all fields correctly");
       return;
     }
-    this.setState(() => this.initialState);
-    this.setState({ errors: {} });
-    this.phoneRef.current.value = "";
-    console.log(errors);
+
+    this.setState(() => (this.showModal = true));
+    document.querySelector("body").style.overflow = "hidden";
   };
 
   handleCancel = (e) => {
     e.preventDefault();
+    this.setState(() => (this.showModal = false));
+    document.querySelector("body").style.overflow = "auto";
+    window.scrollTo(0, 0);
+
     this.setState(() => this.initialState);
     this.setState({ errors: {} });
     this.phoneRef.current.value = "";
-
-    console.log(this.state.errors);
   };
 
   render() {
@@ -168,7 +180,7 @@ class App extends Component {
               onChange={this.onChange}
               name="surname"
               placeholder="Your Surname"
-              // required
+              required
             />
             <ErrorAlert errors={this.state.errors} errorKey="surname" />
           </label>
@@ -178,8 +190,9 @@ class App extends Component {
               type="date"
               value={birthdate}
               onChange={this.onChange}
+              className={birthdate ? "date-input--has-value" : ""}
               name="birthdate"
-              // required
+              required
             />
           </label>
           <label className="label">
@@ -191,7 +204,7 @@ class App extends Component {
               name="phone"
               placeholder="1-2345-67-89"
               maxLength="12"
-              // required
+              required
             />
             <ErrorAlert errors={this.state.errors} errorKey="phone" />
           </label>
@@ -203,7 +216,7 @@ class App extends Component {
               onChange={this.onChange}
               name="website"
               placeholder="https://your_website.com"
-              // required
+              required
             />
             <ErrorAlert errors={this.state.errors} errorKey="website" />
           </label>
@@ -216,10 +229,10 @@ class App extends Component {
               onChange={this.onChange}
               name="about"
               placeholder="Write something about yourself"
-              // required
+              required
             />
             <ErrorAlert errors={this.state.errors} errorKey="about" />
-            <span className="counter">{about.length}/600</span>
+            <span className="counter_about">{about.length}/600</span>
           </label>
 
           <label className="label label_textarea">
@@ -230,10 +243,10 @@ class App extends Component {
               onChange={this.onChange}
               name="techStack"
               placeholder="Programming languages, frameworks, tools, etc"
-              // required
+              required
             />
             <ErrorAlert errors={this.state.errors} errorKey="techStack" />
-            <span className="counter">{techStack.length}/600</span>
+            <span className="counter_techStack">{techStack.length}/600</span>
           </label>
 
           <label className="label label_textarea">
@@ -244,9 +257,12 @@ class App extends Component {
               onChange={this.onChange}
               name="lastProject"
               placeholder="Personal blog site, TicTacToe game, etc"
+              required
             />
             <ErrorAlert errors={this.state.errors} errorKey="lastProject" />
-            <span className="counter">{lastProject.length}/600</span>
+            <span className="counter_lastProject">
+              {lastProject.length}/600
+            </span>
           </label>
           <div className="buttons">
             <button
@@ -262,6 +278,11 @@ class App extends Component {
             </button>
           </div>
         </form>
+        {this.showModal ? (
+          <Modal>
+            <UserData data={this.state} handleCancel={this.handleCancel} />
+          </Modal>
+        ) : null}
       </div>
     );
   }

@@ -39,7 +39,7 @@ h1 {
 
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 1px solid #1a1a1a;
   padding: 0.6em 1.2em;
   margin: 0.5rem;
   font-size: 1em;
@@ -61,6 +61,46 @@ form {
   flex-direction: column;
 }
 
+#modal {
+  background-color: rgba(0, 0, 0, 0.9);
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-y: initial !important;
+}
+#modal:empty {
+  display: none;
+}
+
+#modal > div {
+  color: inherit;
+  min-width: 18rem;
+  max-width: 40rem;
+  margin: 2rem;
+  padding: 1rem;
+  text-align: center;
+  border-radius: 2rem;
+  background-color: #242424;
+  height: 80vh;
+  overflow-y: auto;
+}
+
+.list > h3 {
+  margin: 0 auto;
+}
+
+.list > p {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  max-width: 40rem;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -71,5 +111,8 @@ form {
   }
   button {
     background-color: #f9f9f9;
+  }
+  #modal > div {
+    background-color: #ffffff;
   }
 }
