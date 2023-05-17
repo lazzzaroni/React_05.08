@@ -37,6 +37,17 @@ class App extends Component {
     this.setState({ errors });
   };
 
+  checkBirthdate = (value) => {
+    const MIN_LENGTH = 10;
+    const { errors } = this.state;
+    if (value.length >= MIN_LENGTH) {
+      errors.birthdate = "";
+    } else if (value.length < MIN_LENGTH) {
+      errors.birthdate = "Provide full birth date";
+    }
+    this.setState({ errors });
+  };
+
   checkPhone = () => {
     const LENGTH = 12;
     const { errors } = this.state;
@@ -110,8 +121,11 @@ class App extends Component {
       case "surname":
         this.checkUserName(value, field);
         break;
+      case "birthdate":
+        this.checkBirthdate(value);
+        break;
       case "phone":
-        this.checkPhone(value);
+        this.checkPhone();
         break;
       case "website":
         this.checkWebsite(value);
@@ -128,13 +142,16 @@ class App extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const errors = this.state.errors;
+    const { errors, ...formData } = this.state;
+
+    Object.keys(formData)
+      .filter((key) => formData[key] == "")
+      .map((field) => (errors[field] = "Field should not be empty"));
+    this.setState({ errors });
+
     const hasErrors = Object.keys(errors).some((key) => errors[key] != "");
 
-    if (hasErrors) {
-      alert("Please fill in all fields correctly");
-      return;
-    }
+    if (hasErrors) return;
 
     this.setState(() => (this.showModal = true));
     document.querySelector("body").style.overflow = "hidden";
@@ -167,7 +184,6 @@ class App extends Component {
               onChange={this.onChange}
               name="name"
               placeholder="Your Name"
-              required
               autoFocus
             />
             <ErrorAlert errors={this.state.errors} errorKey="name" />
@@ -180,7 +196,6 @@ class App extends Component {
               onChange={this.onChange}
               name="surname"
               placeholder="Your Surname"
-              required
             />
             <ErrorAlert errors={this.state.errors} errorKey="surname" />
           </label>
@@ -192,8 +207,8 @@ class App extends Component {
               onChange={this.onChange}
               className={birthdate ? "date-input--has-value" : ""}
               name="birthdate"
-              required
             />
+            <ErrorAlert errors={this.state.errors} errorKey="birthdate" />
           </label>
           <label className="label">
             Phone
@@ -204,7 +219,6 @@ class App extends Component {
               name="phone"
               placeholder="1-2345-67-89"
               maxLength="12"
-              required
             />
             <ErrorAlert errors={this.state.errors} errorKey="phone" />
           </label>
@@ -216,7 +230,6 @@ class App extends Component {
               onChange={this.onChange}
               name="website"
               placeholder="https://your_website.com"
-              required
             />
             <ErrorAlert errors={this.state.errors} errorKey="website" />
           </label>
@@ -229,7 +242,6 @@ class App extends Component {
               onChange={this.onChange}
               name="about"
               placeholder="Write something about yourself"
-              required
             />
             <ErrorAlert errors={this.state.errors} errorKey="about" />
             <span className="counter_about">{about.length}/600</span>
@@ -243,7 +255,6 @@ class App extends Component {
               onChange={this.onChange}
               name="techStack"
               placeholder="Programming languages, frameworks, tools, etc"
-              required
             />
             <ErrorAlert errors={this.state.errors} errorKey="techStack" />
             <span className="counter_techStack">{techStack.length}/600</span>
@@ -257,7 +268,6 @@ class App extends Component {
               onChange={this.onChange}
               name="lastProject"
               placeholder="Personal blog site, TicTacToe game, etc"
-              required
             />
             <ErrorAlert errors={this.state.errors} errorKey="lastProject" />
             <span className="counter_lastProject">
