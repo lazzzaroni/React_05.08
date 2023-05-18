@@ -120,7 +120,7 @@ class App extends Component {
     switch (field) {
       case "name":
       case "surname":
-        validators.checkUserName(value, field);
+        this.checkUserName(value, field);
         break;
       case "birthdate":
         this.checkBirthdate(value);
