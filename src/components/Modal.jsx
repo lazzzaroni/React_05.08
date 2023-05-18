@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { Component } from "react";
 import { createPortal } from "react-dom";
 
-class Modal extends Component {
+export class Modal extends Component {
   constructor(props) {
     super(props);
     this.el = document.createElement("div");
@@ -20,8 +20,6 @@ class Modal extends Component {
     return createPortal(this.props.children, this.el);
   }
 }
-
-export default Modal;
 
 Modal.propTypes = {
   children: PropTypes.object,

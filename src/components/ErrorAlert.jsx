@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { Component } from "react";
 
-class ErrorAlert extends Component {
+export class ErrorAlert extends Component {
   constructor(props) {
     super(props);
   }
@@ -22,8 +22,6 @@ class ErrorAlert extends Component {
     );
   }
 }
-
-export default ErrorAlert;
 
 ErrorAlert.propTypes = {
   errors: PropTypes.object,

@@ -1,8 +1,16 @@
 import { Component, createRef } from "react";
+import { ErrorAlert, Modal, UserData } from "./components";
+import {
+  checkBirthdate,
+  checkPhone,
+  checkTextarea,
+  checkUserName,
+  checkWebsite,
+  initialState,
+  maskPhone,
+} from "./helpers";
+
 import "./App.css";
-import ErrorAlert from "./ErrorAlert";
-import Modal from "./Modal";
-import UserData from "./UserData";
 
 class App extends Component {
   constructor(props) {
@@ -10,134 +18,30 @@ class App extends Component {
     this.phoneRef = createRef();
     this.cancelRef = createRef();
     this.showModal = false;
+    this.checkBirthdate = checkBirthdate;
+    this.checkPhone = checkPhone;
+    this.checkTextarea = checkTextarea;
+    this.checkUserName = checkUserName;
+    this.checkWebsite = checkWebsite;
+    this.initialState = initialState;
+    this.maskPhone = maskPhone;
   }
 
-  initialState = {
-    name: "",
-    surname: "",
-    birthdate: "",
-    phone: "",
-    website: "",
-    about: "",
-    techStack: "",
-    lastProject: "",
-    errors: {},
-  };
-
-  state = this.initialState;
-
-  checkUserName = (value, field) => {
-    const { errors } = this.state;
-    if (!/^\p{Lu}/u.test(value) || value == "") {
-      errors[field] = `${
-        field.charAt(0).toUpperCase() + field.slice(1)
-      } must start with capital letter`;
-    } else {
-      errors[field] = "";
-    }
-    this.setState({ errors });
-  };
-
-  checkBirthdate = (value) => {
-    const MIN_LENGTH = 10;
-    const { errors } = this.state;
-    if (value.length >= MIN_LENGTH) {
-      errors.birthdate = "";
-    } else if (value.length < MIN_LENGTH) {
-      errors.birthdate = "Provide full birth date";
-    }
-    this.setState({ errors });
-  };
-
-  checkPhone = () => {
-    const LENGTH = 12;
-    const { errors } = this.state;
-
-    const cardValue = this.phoneRef.current.value
-      .replace(/\D/g, "")
-      .match(/(\d{0,1})(\d{0,4})(\d{0,2})(\d{0,2})/);
-    this.phoneRef.current.value = !cardValue[2]
-      ? cardValue[1]
-      : `${cardValue[1]}-${cardValue[2]}${`${
-          cardValue[3] ? `-${cardValue[3]}` : ""
-        }`}${`${cardValue[4] ? `-${cardValue[4]}` : ""}`}`;
-    const newValue = this.phoneRef.current.value;
-
-    if (
-      (newValue.length != LENGTH && newValue.length != 0) ||
-      newValue.length == 0
-    ) {
-      errors.phone = "Phone number must contain 9 digits";
-    } else if (newValue.length == LENGTH) {
-      errors.phone = "";
-    }
-
-    this.setState({ errors });
-    this.setState({ phone: newValue });
-  };
-
-  checkWebsite = (value) => {
-    const { errors } = this.state;
-
-    if (!value.startsWith("https://")) {
-      errors.website = "Website address must start with https://";
-    } else if (
-      // eslint-disable-next-line no-useless-escape
-      !/^(https:\/\/www\.||https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,10}(:[0-9]{1,5})?(\/.*)?$/g.test(
-        value
-      )
-    ) {
-      errors.website = "Please enter your website address";
-    } else {
-      errors.website = "";
-    }
-    this.setState({ errors });
-  };
-
-  checkTextarea = (value, field) => {
-    const LENGTH = 600;
-    const { errors } = this.state;
-    if (value.length > LENGTH) {
-      errors[field] = "Limit exceeded";
-      document
-        .querySelector(`.counter_${field}`)
-        .setAttribute("style", "color: red");
-    } else {
-      errors[field] = "";
-      document
-        .querySelector(`.counter_${field}`)
-        .removeAttribute("style", "color: red");
-    }
-    this.setState({ errors });
-  };
+  state = initialState;
 
   onChange = (e) => {
     const field = e.target.name;
     const value = e.target.value;
+    const { errors } = this.state;
 
     this.setState({ [field]: value });
 
-    switch (field) {
-      case "name":
-      case "surname":
-        this.checkUserName(value, field);
-        break;
-      case "birthdate":
-        this.checkBirthdate(value);
-        break;
-      case "phone":
-        this.checkPhone();
-        break;
-      case "website":
-        this.checkWebsite(value);
-        break;
-      case "about":
-      case "techStack":
-      case "lastProject":
-        this.checkTextarea(value, field);
-        break;
-      default:
-        break;
+    if (errors[field] != "") {
+      errors[field] = "";
+    }
+
+    if (field == "phone") {
+      this.maskPhone();
     }
   };
 
@@ -145,9 +49,35 @@ class App extends Component {
     e.preventDefault();
     const { errors, ...formData } = this.state;
 
+    Object.keys(formData).forEach((field) => {
+      switch (field) {
+        case "name":
+        case "surname":
+          this.checkUserName(formData[field], field);
+          break;
+        case "birthdate":
+          this.checkBirthdate(formData[field], field);
+          break;
+        case "phone":
+          this.checkPhone(formData[field], field);
+          break;
+        case "website":
+          this.checkWebsite(formData[field], field);
+          break;
+        case "about":
+        case "techStack":
+        case "lastProject":
+          this.checkTextarea(formData[field], field);
+          break;
+        default:
+          break;
+      }
+    });
+
     Object.keys(formData)
       .filter((key) => formData[key] == "")
-      .map((field) => (errors[field] = "Field should not be empty"));
+      .map((field) => (errors[field] = "Field shouldn't be empty"));
+
     this.setState({ errors });
 
     const hasErrors = Object.keys(errors).some((key) => errors[key] != "");
@@ -155,15 +85,11 @@ class App extends Component {
     if (hasErrors) return;
 
     this.setState(() => (this.showModal = true));
-    document.querySelector("body").style.overflow = "hidden";
   };
 
   handleCancel = (e) => {
     e.preventDefault();
     this.setState(() => (this.showModal = false));
-    document.querySelector("body").style.overflow = "auto";
-    window.scrollTo(0, 0);
-
     this.setState(() => this.initialState);
     this.setState({ errors: {} });
     this.phoneRef.current.value = "";
@@ -174,7 +100,10 @@ class App extends Component {
       this.state;
 
     return (
-      <div className="container">
+      <div
+        className="container"
+        style={this.showModal ? { display: "none" } : null}
+      >
         <h1 className="heading">Create Profile</h1>
         <form id="form" onSubmit={this.handleSubmit}>
           <label className="label">

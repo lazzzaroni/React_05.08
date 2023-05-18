@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { Component } from "react";
 
-class UserData extends Component {
+export class UserData extends Component {
   constructor(props) {
     super(props);
   }
@@ -34,8 +34,6 @@ class UserData extends Component {
     );
   }
 }
-
-export default UserData;
 
 UserData.propTypes = {
   data: PropTypes.object,
