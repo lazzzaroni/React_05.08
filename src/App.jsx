@@ -97,7 +97,7 @@ class App extends Component {
     const LENGTH = 600;
     const { errors } = this.state;
     if (value.length > LENGTH) {
-      errors[field] = "Limit exceeded - max 600 characters";
+      errors[field] = "Limit exceeded";
       document
         .querySelector(`.counter_${field}`)
         .setAttribute("style", "color: red");
