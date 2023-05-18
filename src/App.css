@@ -31,7 +31,7 @@
 }
 
 .label_textarea {
-  padding: 0rem 0 10rem 0.5rem;
+  padding: 0rem 0 10.625rem 0.5rem;
 }
 
 .error_message {
@@ -82,7 +82,7 @@ input[type="date"].date-input--has-value::-webkit-datetime-edit-year-field {
 
 textarea {
   height: 8rem;
-  padding: 0.175rem 0.5rem;
+  padding: 0.5rem;
   resize: none;
 }
 

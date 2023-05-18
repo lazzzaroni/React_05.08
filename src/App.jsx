@@ -11,6 +11,7 @@ class App extends Component {
     this.cancelRef = createRef();
     this.showModal = false;
   }
+
   initialState = {
     name: "",
     surname: "",
@@ -119,7 +120,7 @@ class App extends Component {
     switch (field) {
       case "name":
       case "surname":
-        this.checkUserName(value, field);
+        validators.checkUserName(value, field);
         break;
       case "birthdate":
         this.checkBirthdate(value);
