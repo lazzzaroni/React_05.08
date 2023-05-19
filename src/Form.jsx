@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { ErrorAlert, Modal, UserData } from "./components";
 import {
   checkBirthdate,
@@ -18,12 +18,9 @@ export default function Form() {
   const [showModal, setShowModal] = useState(false);
   const phoneRef = useRef(null);
   const cancelRef = useRef(null);
-  const [trigger, setTrigger] = useState(true);
 
   const { name, surname, birthdate, website, about, techStack, lastProject } =
     state;
-
-  useEffect(() => {}, [trigger]);
 
   function handleChange(e) {
     const field = e.target.name;
@@ -45,49 +42,53 @@ export default function Form() {
     setErrors(newErrors);
   }
 
+  function validate(data, errors) {
+    Object.keys(data).forEach((field) => {
+      switch (field) {
+        case "name":
+        case "surname":
+          checkUserName(data[field], field);
+          break;
+        case "birthdate":
+          checkBirthdate(data[field], field);
+          break;
+        case "phone":
+          checkPhone(data[field], field);
+          break;
+        case "website":
+          checkWebsite(data[field], field);
+          break;
+        case "about":
+        case "techStack":
+        case "lastProject":
+          checkTextarea(data[field], field);
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
-    const formData = state;
-    const newErrors = errors;
+    const { ...formData } = state;
+    const { ...newErrors } = errors;
+    console.log(formData);
 
-    // Object.keys(formData).forEach((field) => {
-    //   const params = {error, setErrors, value, field}
-    //   switch (field) {
-    //     case "name":
-    //     case "surname":
-    //       checkUserName(formData[field], field);
-    //       break;
-    //     case "birthdate":
-    //       checkBirthdate(formData[field], field);
-    //       break;
-    //     case "phone":
-    //       checkPhone(formData[field], field);
-    //       break;
-    //     case "website":
-    //       checkWebsite(formData[field], field);
-    //       break;
-    //     case "about":
-    //     case "techStack":
-    //     case "lastProject":
-    //       checkTextarea(formData[field], field);
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    // });
+    // validate(formData, newErrors);
 
     Object.keys(formData)
       .filter((key) => formData[key] == "")
       .map((field) => (newErrors[field] = "Field shouldn't be empty"));
 
+    console.log(newErrors);
     setErrors(newErrors);
 
-    const hasErrors = Object.keys(errors).some((key) => errors[key] != "");
+    const hasErrors = Object.keys(newErrors).some(
+      (key) => newErrors[key] != ""
+    );
 
-    if (hasErrors) {
-      setTrigger(!trigger);
-      return;
-    }
+    if (hasErrors) return;
 
     setShowModal(true);
   }
