@@ -1,87 +1,58 @@
 import { useRef, useState } from "react";
 import { ErrorAlert, Modal, UserData } from "./components";
 import {
-  checkBirthdate,
-  checkPhone,
   checkTextarea,
-  checkUserName,
-  checkWebsite,
   initialState,
   maskPhone,
+  validateFields,
 } from "./helpers/copy";
 
 import "./App.css";
 
 export default function Form() {
-  const [state, setState] = useState(initialState);
+  const [formData, setFormData] = useState(initialState);
   const [errors, setErrors] = useState({});
   const [showModal, setShowModal] = useState(false);
   const phoneRef = useRef(null);
   const cancelRef = useRef(null);
 
   const { name, surname, birthdate, website, about, techStack, lastProject } =
-    state;
+    formData;
 
   function handleChange(e) {
     const field = e.target.name;
     const value = e.target.value;
-    const newState = { ...state };
+    const newFormData = { ...formData };
     const newErrors = { ...errors };
-
-    if (field == "phone") {
-      newState[field] = maskPhone(phoneRef);
-    } else {
-      newState[field] = value;
-    }
 
     if (newErrors[field] != "") {
       newErrors[field] = "";
     }
+    switch (field) {
+      case "phone":
+        newFormData[field] = maskPhone(phoneRef);
+        break;
+      case "about":
+      case "techStack":
+      case "lastProject":
+        newFormData[field] = value;
+        checkTextarea(newErrors, value, field);
+        break;
+      default:
+        newFormData[field] = value;
+        break;
+    }
 
-    setState(newState);
+    setFormData(newFormData);
     setErrors(newErrors);
-  }
-
-  function validate(data, errors) {
-    Object.keys(data).forEach((field) => {
-      switch (field) {
-        case "name":
-        case "surname":
-          checkUserName(data[field], field);
-          break;
-        case "birthdate":
-          checkBirthdate(data[field], field);
-          break;
-        case "phone":
-          checkPhone(data[field], field);
-          break;
-        case "website":
-          checkWebsite(data[field], field);
-          break;
-        case "about":
-        case "techStack":
-        case "lastProject":
-          checkTextarea(data[field], field);
-          break;
-        default:
-          break;
-      }
-    });
   }
 
   function handleSubmit(e) {
     e.preventDefault();
-    const { ...formData } = state;
     const { ...newErrors } = errors;
-    console.log(formData);
 
-    // validate(formData, newErrors);
+    validateFields(formData, newErrors);
 
-    Object.keys(formData)
-      .filter((key) => formData[key] == "")
-      .map((field) => (newErrors[field] = "Field shouldn't be empty"));
-
-    console.log(newErrors);
     setErrors(newErrors);
 
     const hasErrors = Object.keys(newErrors).some(
@@ -96,9 +67,8 @@ export default function Form() {
   function handleCancel(e) {
     e.preventDefault();
     if (showModal) setShowModal(false);
-    setState(initialState);
+    setFormData(initialState);
     setErrors({});
-    // phoneRef.current = "";
   }
 
   return (
@@ -217,7 +187,7 @@ export default function Form() {
       </form>
       {showModal ? (
         <Modal>
-          <UserData data={state} handleCancel={handleCancel} />
+          <UserData data={formData} handleCancel={handleCancel} />
         </Modal>
       ) : null}
     </div>

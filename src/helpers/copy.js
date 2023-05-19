@@ -21,8 +21,43 @@ export function maskPhone(phoneRef) {
   return phoneRef.current.value;
 }
 
-export function checkUserName(value, field) {
-  const { errors } = this.state;
+export function validateFields(data, errors) {
+  Object.keys(data).forEach((field) => {
+    switch (field) {
+      case "name":
+      case "surname":
+        checkUserName(errors, data[field], field);
+        break;
+      case "birthdate":
+        checkBirthdate(errors, data[field], field);
+        break;
+      case "phone":
+        checkPhone(errors, data[field], field);
+        break;
+      case "website":
+        checkWebsite(errors, data[field], field);
+        break;
+      case "about":
+      case "techStack":
+      case "lastProject":
+        checkTextarea(errors, data[field], field);
+        break;
+      default:
+        break;
+    }
+  });
+  Object.keys(data)
+    .filter((key) => data[key] == "")
+    .map((field) => (errors[field] = "Field shouldn't be empty"));
+}
+
+export function validateEmpty(data, errors) {
+  Object.keys(data)
+    .filter((key) => data[key] == "")
+    .map((field) => (errors[field] = "Field shouldn't be empty"));
+}
+
+function checkUserName(errors, value, field) {
   if (!/^\p{Lu}/u.test(value) || value == "") {
     errors[field] = `${
       field.charAt(0).toUpperCase() + field.slice(1)
@@ -30,22 +65,18 @@ export function checkUserName(value, field) {
   } else {
     errors[field] = "";
   }
-  this.setState({ errors });
 }
 
-export function checkBirthdate(value, field) {
+function checkBirthdate(errors, value, field) {
   const MIN_LENGTH = 10;
-  const { errors } = this.state;
   if (value.length >= MIN_LENGTH) {
     errors[field] = "";
   } else if (value.length < MIN_LENGTH) {
     errors[field] = "Provide full birth date";
   }
-  this.setState({ errors });
 }
 
-export function checkPhone(value, field) {
-  const { errors } = this.state;
+function checkPhone(errors, value, field) {
   const LENGTH = 12;
 
   if ((value.length != LENGTH && value.length != 0) || value.length == 0) {
@@ -53,13 +84,9 @@ export function checkPhone(value, field) {
   } else if (value.length == LENGTH) {
     errors[field] = "";
   }
-
-  this.setState({ errors });
 }
 
-export function checkWebsite(value, field) {
-  const { errors } = this.state;
-
+function checkWebsite(errors, value, field) {
   if (!value.startsWith("https://")) {
     errors[field] = "Website address must start with https://";
   } else if (
@@ -72,12 +99,10 @@ export function checkWebsite(value, field) {
   } else {
     errors[field] = "";
   }
-  this.setState({ errors });
 }
 
-export function checkTextarea(value, field) {
+export function checkTextarea(errors, value, field) {
   const LENGTH = 600;
-  const { errors } = this.state;
   if (value.length > LENGTH) {
     errors[field] = "Limit exceeded";
     document
@@ -89,5 +114,4 @@ export function checkTextarea(value, field) {
       .querySelector(`.counter_${field}`)
       .removeAttribute("style", "color: red");
   }
-  this.setState({ errors });
 }
