@@ -131,7 +131,6 @@ export function Form() {
           />
           <ErrorAlert errors={errors} errorKey="website" />
         </label>
-
         <label className="label label_textarea">
           About
           <textarea
@@ -144,7 +143,6 @@ export function Form() {
           <ErrorAlert errors={errors} errorKey="about" />
           <span className="counter_about">{about.length}/600</span>
         </label>
-
         <label className="label label_textarea">
           Tech Stack
           <textarea
@@ -157,7 +155,6 @@ export function Form() {
           <ErrorAlert errors={errors} errorKey="techStack" />
           <span className="counter_techStack">{techStack.length}/600</span>
         </label>
-
         <label className="label label_textarea">
           Last Project
           <textarea
