@@ -1,24 +1,23 @@
 import PropTypes from "prop-types";
-import { Component } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
-export class Modal extends Component {
-  constructor(props) {
-    super(props);
-    this.el = document.createElement("div");
+export function Modal({ children }) {
+  const elRef = useRef(null);
+
+  if (!elRef.current) {
+    elRef.current = document.createElement("div");
   }
 
-  componentDidMount() {
-    document.getElementById("modal").appendChild(this.el);
-  }
+  useEffect(() => {
+    document.getElementById("modal").appendChild(elRef.current);
 
-  componentWillUnmount() {
-    document.getElementById("modal").removeChild(this.el);
-  }
+    return () => {
+      document.getElementById("modal").removeChild(elRef.current);
+    };
+  }, []);
 
-  render() {
-    return createPortal(this.props.children, this.el);
-  }
+  return createPortal(children, elRef.current);
 }
 
 Modal.propTypes = {
