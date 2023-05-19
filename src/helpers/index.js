@@ -7,25 +7,61 @@ export const initialState = {
   about: "",
   techStack: "",
   lastProject: "",
-  errors: {},
 };
 
-export function maskPhone() {
-  const cardValue = this.phoneRef.current.value
+export function maskPhone(phoneRef) {
+  const cardValue = phoneRef.current.value
     .replace(/\D/g, "")
     .match(/(\d{0,1})(\d{0,4})(\d{0,2})(\d{0,2})/);
-  this.phoneRef.current.value = !cardValue[2]
+  phoneRef.current.value = !cardValue[2]
     ? cardValue[1]
     : `${cardValue[1]}-${cardValue[2]}${`${
         cardValue[3] ? `-${cardValue[3]}` : ""
       }`}${`${cardValue[4] ? `-${cardValue[4]}` : ""}`}`;
-  const newValue = this.phoneRef.current.value;
-
-  this.setState({ phone: newValue });
+  return phoneRef.current.value;
 }
 
-export function checkUserName(value, field) {
-  const { errors } = this.state;
+export function checkTextarea(errors, value, field) {
+  const LENGTH = 600;
+  if (value.length > LENGTH) {
+    errors[field] = "Limit exceeded";
+    document
+      .querySelector(`.counter_${field}`)
+      .setAttribute("style", "color: red");
+  } else {
+    errors[field] = "";
+    document
+      .querySelector(`.counter_${field}`)
+      .removeAttribute("style", "color: red");
+  }
+}
+
+export function validateFields(data, errors) {
+  Object.keys(data).forEach((field) => {
+    switch (field) {
+      case "name":
+      case "surname":
+        checkUserName(errors, data[field], field);
+        break;
+      case "birthdate":
+        checkBirthdate(errors, data[field], field);
+        break;
+      case "phone":
+        checkPhone(errors, data[field], field);
+        break;
+      case "website":
+        checkWebsite(errors, data[field], field);
+        break;
+      default:
+        break;
+    }
+  });
+  Object.keys(data)
+    .filter((key) => data[key] == "")
+    .map((field) => (errors[field] = "Field shouldn't be empty"));
+}
+
+function checkUserName(errors, value, field) {
   if (!/^\p{Lu}/u.test(value) || value == "") {
     errors[field] = `${
       field.charAt(0).toUpperCase() + field.slice(1)
@@ -33,22 +69,18 @@ export function checkUserName(value, field) {
   } else {
     errors[field] = "";
   }
-  this.setState({ errors });
 }
 
-export function checkBirthdate(value, field) {
+function checkBirthdate(errors, value, field) {
   const MIN_LENGTH = 10;
-  const { errors } = this.state;
   if (value.length >= MIN_LENGTH) {
     errors[field] = "";
   } else if (value.length < MIN_LENGTH) {
     errors[field] = "Provide full birth date";
   }
-  this.setState({ errors });
 }
 
-export function checkPhone(value, field) {
-  const { errors } = this.state;
+function checkPhone(errors, value, field) {
   const LENGTH = 12;
 
   if ((value.length != LENGTH && value.length != 0) || value.length == 0) {
@@ -56,13 +88,9 @@ export function checkPhone(value, field) {
   } else if (value.length == LENGTH) {
     errors[field] = "";
   }
-
-  this.setState({ errors });
 }
 
-export function checkWebsite(value, field) {
-  const { errors } = this.state;
-
+function checkWebsite(errors, value, field) {
   if (!value.startsWith("https://")) {
     errors[field] = "Website address must start with https://";
   } else if (
@@ -75,22 +103,4 @@ export function checkWebsite(value, field) {
   } else {
     errors[field] = "";
   }
-  this.setState({ errors });
-}
-
-export function checkTextarea(value, field) {
-  const LENGTH = 600;
-  const { errors } = this.state;
-  if (value.length > LENGTH) {
-    errors[field] = "Limit exceeded";
-    document
-      .querySelector(`.counter_${field}`)
-      .setAttribute("style", "color: red");
-  } else {
-    errors[field] = "";
-    document
-      .querySelector(`.counter_${field}`)
-      .removeAttribute("style", "color: red");
-  }
-  this.setState({ errors });
 }

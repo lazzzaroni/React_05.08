@@ -1,15 +1,13 @@
 import { useRef, useState } from "react";
-import { ErrorAlert, Modal, UserData } from "./components";
+import { ErrorAlert, Modal, UserData } from "../components";
 import {
   checkTextarea,
   initialState,
   maskPhone,
   validateFields,
-} from "./helpers/copy";
+} from "../helpers";
 
-import "./App.css";
-
-export default function Form() {
+export function Form() {
   const [formData, setFormData] = useState(initialState);
   const [errors, setErrors] = useState({});
   const [showModal, setShowModal] = useState(false);
@@ -28,6 +26,7 @@ export default function Form() {
     if (newErrors[field] != "") {
       newErrors[field] = "";
     }
+
     switch (field) {
       case "phone":
         newFormData[field] = maskPhone(phoneRef);
@@ -52,13 +51,11 @@ export default function Form() {
     const { ...newErrors } = errors;
 
     validateFields(formData, newErrors);
-
     setErrors(newErrors);
 
     const hasErrors = Object.keys(newErrors).some(
       (key) => newErrors[key] != ""
     );
-
     if (hasErrors) return;
 
     setShowModal(true);
@@ -66,7 +63,9 @@ export default function Form() {
 
   function handleCancel(e) {
     e.preventDefault();
+
     if (showModal) setShowModal(false);
+
     setFormData(initialState);
     setErrors({});
   }

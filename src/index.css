@@ -92,6 +92,10 @@ form {
   overflow-y: auto;
 }
 
+.list {
+  margin-top: 0.5rem;
+}
+
 .list > h3 {
   margin: 0 auto;
 }
